@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    
+    {% with total_images_created=request.user.images_created.count %}
+        <p>Welcome to your dashboard. You have posted {{ total_images_created }} listing{{ total_images_created|pluralize }}.</p>
+    {% endwith %}
+    
+        <form name="myform" method="GET" action = 'search_list'>            
+            <input type='text' name='q' placeholder='search' />
+            <input type='submit' value='Search'>
+        </form>
+
+
+    <p>Click here to post a new listing → <a href="{% url "images:create" %}" class="button">Create post</a><p>
+    
+    <p>You can also <a href="{% url "edit" %}">edit your profile</a> or <a href="{% url "password_change" %}">change your password</a>.<p>
+    
+    <h2>What's happening</h2>
+    <div id="action-list">
+        {% for action in actions %}
+            {% include "actions/action/detail.html" %}
+        {% endfor %}
+    </div>
+{% endblock %}

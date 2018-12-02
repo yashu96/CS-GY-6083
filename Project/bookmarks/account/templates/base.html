@@ -1,0 +1,74 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+</head>
+<body>
+    <div id="header">
+        <span class="logo">REAL ESTATE</span>
+        {% if request.user.is_authenticated %}
+        <ul class="menu">
+            <li {% if section == "dashboard" %}class="selected"{% endif %}><a href="{% url "dashboard" %}">My dashboard</a></li>
+            <li {% if section == "images" %}class="selected"{% endif %}><a href="{% url "images:list" %}">Posts</a></li>
+            <li {% if section == "posts" %}class="selected"{% endif %}><a href="{% url "images:ranking" %}">Top posts</a></li>
+
+            <li {% if section == "people" %}class="selected"{% endif %}><a href="{% url "user_list" %}">People</a></li>
+            <li {% if section == "edit" %}class="selected"{% endif %}><a href="{% url "edit" %}">Edit Profile</a></li>
+            <li {% if section == "change_password" %}class="selected"{% endif %}><a href="{% url "password_change" %}">Password Change</a></li>
+        </ul>
+       <!--  <form name="myform" method="GET" action = 'search_list'>            
+            <input type='text' name='q' placeholder='search' />
+            <input type='submit' value='Search'>
+        </form> -->
+        {% endif %}
+        <span class="user">
+        {% if request.user.is_authenticated %}
+            Hello {{ request.user.first_name }}, <a href="{% url "logout" %}">Logout</a>
+        {% else %}
+            <a href="{% url "login" %}">Log-in</a>
+        {% endif %}
+        </span>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {{ message|safe }}
+                    <a href="#" class="close">×</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+    <script>
+        var csrftoken = $.cookie('csrftoken');
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $(document).ready(function(){
+            {% block domready %}
+            {% endblock %}
+		});
+    </script>
+</body>
+</html>
